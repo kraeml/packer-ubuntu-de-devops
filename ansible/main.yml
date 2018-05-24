@@ -1,0 +1,142 @@
+---
+- hosts: all
+  #become: yes
+  gather_facts: yes
+  #pre_tasks:
+  #  - name: "Install devops dependencies"
+  #    become: yes
+  #    apt:
+  #      name: "{{ item }}"
+  #      state: present
+  #      update_cache: yes
+  #      cache_valid_time: 3600
+  #    with_items:
+  #      # For capybara and poltergeist
+  #      - zlib1g-dev
+  roles:
+    #- role: geerlingguy.ruby
+    #  become: yes
+    #  ruby_install_gems_user: vagrant
+    #  #ruby_version: "2.5.1"
+    #  #ruby_download_url: "http://cache.ruby-lang.org/pub/ruby/2.5/ruby-{{ruby_version}}.tar.gz"
+    #  ruby_install_gems:
+    #    - inspec
+    #    - serverspec
+    #    #- capybara
+    #    #- selenium-webdriver
+    #    - cucumber
+    #    #- rspec
+    #    #- sinatra
+    #    #- poltergeist
+    #    #- rspec-expectations
+    #    #- launchy
+    #    #- rest-client
+    #    #- test-kitchen
+    #    #- kitchen-ansible
+    #    #- kitchen-salt
+    #    #- kitchen-vagrant
+    #    #- kitchen-docker
+    #    #- kitchen-sync
+    #    #- kitchen-verifier-serverspec
+    #    #- kitchen-lxc
+    #    #- kitchen-inspec
+    #    #- fog
+    #    #- foodcritic
+    #    #- thor-foodcritic
+    #  tags:
+    #    - ruby
+    - role: andrewrothstein.vagrant
+      become: yes
+      #vagrant_version : '2.1.1'
+      #vagrant_checksums:
+        # https://releases.hashicorp.com/vagrant/2.1.1/vagrant_2.1.1_SHA256SUMS
+      #  '2.1.1':
+      #    x86_64:
+      #      deb: sha256:2b1a12c85d6d954e5065c41e5982a0ae594c6a16ebca52935d007e38006bbd80
+      tags:
+        - vagrant
+    - role: andrewrothstein.packer
+      become: yes
+      #packer_ver: '1.2.3'
+      tags:
+        # Don't use packer tag becaus this is a disable flag for packer build
+        - vagrant
+
+  tasks:
+    - block:
+      - name: Add ansible ppa
+        become: yes
+        apt_repository:
+          repo: 'ppa:ansible/ansible'
+          update_cache: yes
+      - name: "Install devops needed packages"
+        become: yes
+        apt:
+          name: "{{ item }}"
+          state: present
+          update_cache: yes
+          cache_valid_time: 3600
+        with_items:
+          - ansible
+          - ruby
+          - ruby-dev
+          - gem
+          - ruby-serverspec
+          - ruby-capybara
+          - cucumber
+          -
+      - name: "Install vagrant-plugins"
+        command: "vagrant plugin install {{item}}"
+        with_items:
+          - vagrant-lxc
+      - name: "Install ruby gems"
+        become: yes
+        gem:
+          name: "{{item}}"
+          user_install: no
+        with_items:
+          - inspec
+          #- serverspec
+          #- capybara
+          #- selenium-webdriver
+          #- cucumber
+          #- rspec
+          #- sinatra
+          #- poltergeist
+          #- rspec-expectations
+          #- launchy
+          #- rest-client
+          #- test-kitchen
+          #- kitchen-ansible
+          #- kitchen-salt
+          #- kitchen-vagrant
+          #- kitchen-docker
+          #- kitchen-sync
+          #- kitchen-verifier-serverspec
+          #- kitchen-lxc
+          #- kitchen-inspec
+          #- fog
+          #- foodcritic
+          #- thor-foodcritic
+        tags:
+          - ruby
+      - name: "Install python3 packages"
+        pip:
+          name: "{{item}}"
+          virtualenv: "{{ansible_user_dir}}/.testinfra_venv"
+          virtualenv_python: python3
+        with_items:
+          - testinfra
+          - paramiko
+          - pytest-xdist
+        tags:
+          - python
+      - name: "Install python3 packages"
+        pip:
+          name: "{{item}}"
+          virtualenv: "{{ansible_user_dir}}/.molecule_venv"
+          virtualenv_python: python3
+        with_items:
+          - molecule
+        tags:
+          - python

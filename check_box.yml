@@ -1,0 +1,40 @@
+---
+- hosts: localhost
+  vars:
+    box_developer: "kraeml"
+    box_lts: "ubuntu_1804_de_extended"
+    box_name: "{{box_developer}}/{{box_lts}}"
+    box_version: "{{lookup('file', '../packer-ubuntu-de-extended/version') }}"
+    box_ovf_path: "{{ansible_user_dir}}/.vagrant.d/boxes/{{box_developer}}-VAGRANTSLASH-{{box_lts}}/{{box_version}}/virtualbox/"
+
+  tasks:
+    - name: "Check box {{box_name}} is in version {{box_version}}"
+      command: "vagrant box add --box-version {{box_version}} {{box_name}}"
+      register: box_info
+      ignore_errors: yes
+      changed_when: False
+
+    - name: "Display box info"
+      debug:
+        var: box_info
+        verbosity: 2
+
+    - name: "Display box path"
+      debug:
+        var: box_ovf_path
+        verbosity: 2
+
+    - name: "Test box exists"
+      command: "ls -ld {{box_ovf_path}}"
+      args:
+        creates: "{{box_ovf_path}}"
+
+    - name: Ensure virtualbox-ovf directory exists
+      file:
+        path: ./virtualbox-ovf
+        state: directory
+
+    - name: "Copy virtualbox files"
+      copy:
+        dest: ./virtualbox-ovf
+        src: "{{box_ovf_path}}"

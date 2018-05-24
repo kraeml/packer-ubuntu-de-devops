@@ -1,0 +1,7 @@
+---
+#- src: geerlingguy.ruby
+#  version: '2.5.0'
+- src: andrewrothstein.vagrant
+  version: 'v1.0.13'
+- src: andrewrothstein.packer
+  version: 'v2.1.4'
