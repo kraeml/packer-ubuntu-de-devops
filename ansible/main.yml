@@ -84,7 +84,6 @@
           - ruby-serverspec
           - ruby-capybara
           - cucumber
-          -
       - name: "Install vagrant-plugins"
         command: "vagrant plugin install {{item}}"
         with_items:
@@ -120,7 +119,7 @@
           #- thor-foodcritic
         tags:
           - ruby
-      - name: "Install python3 packages"
+      - name: "Install testinfra virtualenv"
         pip:
           name: "{{item}}"
           virtualenv: "{{ansible_user_dir}}/.testinfra_venv"
@@ -131,7 +130,7 @@
           - pytest-xdist
         tags:
           - python
-      - name: "Install python3 packages"
+      - name: "Install molecule virtualenv"
         pip:
           name: "{{item}}"
           virtualenv: "{{ansible_user_dir}}/.molecule_venv"

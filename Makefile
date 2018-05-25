@@ -1,7 +1,7 @@
 directory = $$(basename $$(pwd))
 builds/virtualbox-ubuntu1804.box: virtualbox-ovf/box.ovf
 	#source ../ENV_VARS
-	./bin/packer build -force $(directory).json
+	packer build -force $(directory).json
 	vagrant box remove --force file://builds/virtualbox-ubuntu1804.box || true
 
 virtualbox-ovf/box.ovf:
@@ -14,7 +14,7 @@ rm_box:
 	rm builds/virtualbox-ubuntu1804.box || true
 
 test:
-	vagrant up
+	vagrant up --provider virtualbox
 	inspec exec -t ssh://vagrant@$$(vagrant ssh-config | grep HostName | cut -d 'e' -f 2 | cut -d ' ' -f 2):$$(vagrant ssh-config | grep Port | cut -d 't' -f 2 | cut -d ' ' -f 2) -i $$(vagrant ssh-config | grep IdentityFile | cut -d ' ' -f 4) --password vagrant inspec_test/locale_de/
 
 test_devsec:
