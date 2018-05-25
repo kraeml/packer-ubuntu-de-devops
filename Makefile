@@ -4,7 +4,7 @@ export ATLAS_TOKEN = $(token)
 directory = $$(basename $$(pwd))
 builds/virtualbox-ubuntu1804.box: virtualbox-ovf/box.ovf
 	#source ../ENV_VARS
-	packer build -force $(directory).json
+	packer build -force -machine-readable $(directory).json
 	vagrant box remove --force file://builds/virtualbox-ubuntu1804.box || true
 
 virtualbox-ovf/box.ovf:
