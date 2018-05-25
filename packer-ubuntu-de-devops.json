@@ -44,7 +44,22 @@
           "make test_newBox"
         ],
         "type": "shell-local"
+      }
+    ],
+    [
+      {
+        "output": "builds/{{.Provider}}-ubuntu1804.box",
+        "type": "vagrant",
+        "keep_input_artifact": true
       },
+      {
+        "type": "vagrant-cloud",
+        "box_tag": "kraeml/ubuntu_1804_de_extended",
+        "access_token": "{{user `cloud_token`}}",
+        "version": "{{user `version`}}"
+      }
+    ],
+    [
       {
         "environment_vars": [
           "VERSION={{user `version`}}"
