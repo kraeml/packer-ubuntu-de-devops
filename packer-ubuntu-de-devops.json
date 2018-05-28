@@ -54,7 +54,7 @@
       },
       {
         "type": "vagrant-cloud",
-        "box_tag": "kraeml/ubuntu_1804_de_extended",
+        "box_tag": "kraeml/ubuntu_1804_de_devops",
         "access_token": "{{user `cloud_token`}}",
         "version": "{{user `version`}}"
       }
