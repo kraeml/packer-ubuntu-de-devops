@@ -1,20 +1,35 @@
 file=../ENV_VARS
 token=`cat $(file)`
 export ATLAS_TOKEN = $(token)
+# directory is the name of json-file
 directory = $$(basename $$(pwd))
-builds/virtualbox-ubuntu1804.box: virtualbox-ovf/box.ovf
+
+ifndef NO_CLOUD
+FILE_NAME = $(directory)
+else
+FILE_NAME = $(directory)-no-cloud
+endif
+
+
+no-cloud:
+	cat $(directory).json | jq 'del(."post-processors"[1])' > $(directory)-no-cloud.json
+
+builds/virtualbox-ubuntu1804.box: virtualbox-ovf/box.ovf no-cloud
 	#source ../ENV_VARS
-	packer build -force -machine-readable $(directory).json
+	packer build -force $(FILE_NAME).json
 	vagrant box remove --force file://builds/virtualbox-ubuntu1804.box || true
 
 virtualbox-ovf/box.ovf:
 	ansible-playbook check_box.yml
 
-clean_all: rm_box
+clean_all: rm_box rm_no_cloud
 	rm virtualbox-ovf/*
 
 rm_box:
 	rm builds/virtualbox-ubuntu1804.box || true
+
+rm_no_cloud:
+	rm packer-ubuntu-de-devops-no-cloud.json || true
 
 test:
 	vagrant up --provider virtualbox
