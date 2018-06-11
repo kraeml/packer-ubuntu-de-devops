@@ -5,3 +5,4 @@ virtualbox-ovf/
 .vagrant/
 bin/packer
 version
+packer-ubuntu-de-devops-no-cloud.json
